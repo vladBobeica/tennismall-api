@@ -2,20 +2,40 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+
 use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\V1\ProductResource;
+use App\Services\V1\ProductQuery;
+use Illuminate\Http\Request;
+
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Product::all();
+        $filter = new ProductQuery();
+        $queryItems = $filter->transform($request);
+
+        if(count($queryItems) == 0) {
+            return Product::all();
+        } else {
+            // Check if the 'category' parameter exists in the $queryItems array
+            if (isset($queryItems['category'])) {
+                // If category parameter exists, filter products by category
+                return Product::where('category', $queryItems['category'])->get();
+            } else {
+                // Return an empty result if category parameter is not provided
+                return [];
+            }
+        
     }
+}
 
     /**
      * Show the form for creating a new resource.
@@ -38,7 +58,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        return new ProductResource($product);
     }
 
     /**
