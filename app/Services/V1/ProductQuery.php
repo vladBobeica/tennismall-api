@@ -1,15 +1,18 @@
 <?php
 
 namespace App\Services\V1;
+
 use Illuminate\Http\Request;
 
 
-class ProductQuery {
+class ProductQuery
+{
     protected $allowedParms = [
-        'category'
+        'categoryId'
     ];
 
-    public function transform(Request $request) {
+    public function transform(Request $request)
+    {
         $eloQuery = [];
 
         foreach ($this->allowedParms as $param) {

@@ -14,28 +14,30 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $productQuery;
+
+    public function __construct(ProductQuery $productQuery)
+    {
+        $this->productQuery = $productQuery;
+    }
+
     public function index(Request $request)
     {
-        $filter = new ProductQuery();
-        $queryItems = $filter->transform($request);
+        $queryItems = $this->productQuery->transform($request);
 
-        if(count($queryItems) == 0) {
+        if (empty($queryItems)) {
             return Product::all();
         } else {
             // Check if the 'category' parameter exists in the $queryItems array
-            if (isset($queryItems['category'])) {
-                // If category parameter exists, filter products by category
-                return Product::where('category', $queryItems['category'])->get();
+            if (isset($queryItems['categoryId'])) {
+                // If category parameter exists, filter products by category_id
+                return Product::where('category_id', $queryItems['categoryId'])->get();
             } else {
                 // Return an empty result if category parameter is not provided
                 return [];
             }
-        
+        }
     }
-}
 
     /**
      * Show the form for creating a new resource.
